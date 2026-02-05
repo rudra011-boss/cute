@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Be My Valentine 💖</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ff5f9e, #ff86b7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #fff;
+    text-align: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.18);
+    padding: 30px 20px;
+    border-radius: 22px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    z-index: 2;
+}
+
+h1 {
+    font-size: 1.9rem;
+    margin-bottom: 25px;
+}
+
+.buttons {
+    position: relative;
+    height: 130px;
+}
+
+button {
+    width: 80%;
+    max-width: 260px;
+    padding: 14px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+#yesBtn {
+    background: #ff2f6d;
+    color: white;
+    box-shadow: 0 8px 18px rgba(255,47,109,0.5);
+}
+
+#noBtn {
+    background: #fff;
+    color: #ff2f6d;
+    position: absolute;
+    left: 50%;
+    top: 70px;
+    transform: translateX(-50%);
+}
+
+#message {
+    display: none;
+    font-size: 1.3rem;
+    margin-top: 25px;
+    line-height: 1.6;
+    min-height: 120px;
+}
+
+/* Love letter box */
+.love-letter {
+    display: none;
+    margin-top: 20px;
+    padding: 18px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 18px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* Floating hearts */
+.heart {
+    position: absolute;
+    bottom: -40px;
+    font-size: 22px;
+    animation: floatUp linear forwards;
+    pointer-events: none;
+}
+
+@keyframes floatUp {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-120vh); opacity: 0; }
+}
+
+/* Heart explosion */
+.explosion-heart {
+    position: absolute;
+    font-size: 24px;
+    animation: explode 1s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes explode {
+    0% { transform: scale(0.5); opacity: 1; }
+    100% {
+        transform: translate(var(--x), var(--y)) scale(1.4);
+        opacity: 0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Background music -->
+<audio id="bgMusic" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7e4b89eae1.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container">
+    <h1>MUSKAN Is there a chance you could like me the way I like you? 💘</h1>
+
+    <div class="buttons">
+        <button id="yesBtn">Yes 💖</button>
+        <button id="noBtn">No 🙈</button>
+    </div>
+
+    <div id="message"></div>
+
+    <div class="love-letter" id="loveLetter"></div>
+</div>
+
+<script>
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const messageBox = document.getElementById("message");
+const loveLetterBox = document.getElementById("loveLetter");
+const buttons = document.querySelector(".buttons");
+const music = document.getElementById("bgMusic");
+
+const noTexts = [
+    "I like you yrr 🤭",
+    "Muskan yes kr do yrr 😜",
+    "jldi yes krdo 💕",
+    "Mere jysa koi nhi milega 😏",
+    "Maan bhi jaa yrr 😆"
+];
+
+const finalMessage = 
+`I knew you’d say YES 💕`;
+
+const loveLetterText =
+`Muskan,
+I’ve always admired how you stay happy in your own quiet way. Even with a small circle,
+ you carry this calm confidence—and that smile of yours makes everything feel lighter.
+It might sound simple, but whenever you call my name, 
+it genuinely makes me feel special. I still remember the first time during the exam—it stayed with me. And our first handshake at the Sahityam event… small moment, but I don’t think you know how meaningful it was to me.
+I like you.
+I just wanted to know… do you like me too?
+—Rudra   💖`;
+
+function moveNoButton() {
+    const maxX = buttons.offsetWidth - noBtn.offsetWidth;
+    const maxY = buttons.offsetHeight - noBtn.offsetHeight;
+
+    noBtn.style.left = Math.random() * maxX + "px";
+    noBtn.style.top = Math.random() * maxY + "px";
+    noBtn.style.transform = "none";
+    noBtn.innerText = noTexts[Math.floor(Math.random() * noTexts.length)];
+}
+
+noBtn.addEventListener("mouseenter", moveNoButton);
+noBtn.addEventListener("touchstart", moveNoButton);
+
+/* YES click */
+yesBtn.addEventListener("click", (e) => {
+    buttons.style.display = "none";
+    messageBox.style.display = "block";
+    music.play();
+    heartExplosion(e.clientX, e.clientY);
+
+    typeText(finalMessage, messageBox, 45, () => {
+        setTimeout(() => {
+            loveLetterBox.style.display = "block";
+            typeText(loveLetterText, loveLetterBox, 40);
+        }, 700);
+    });
+});
+
+/* Typing animation with callback */
+function typeText(text, element, speed, callback) {
+    let index = 0;
+    element.innerHTML = "";
+
+    function type() {
+        if (index < text.length) {
+            element.innerHTML += text[index] === "\n" ? "<br>" : text[index];
+            index++;
+            setTimeout(type, speed);
+        } else if (callback) {
+            callback();
+        }
+    }
+    type();
+}
+
+/* Heart explosion */
+function heartExplosion(x, y) {
+    for (let i = 0; i < 25; i++) {
+        const heart = document.createElement("div");
+        heart.className = "explosion-heart";
+        heart.innerHTML = "💖";
+
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = Math.random() * 120;
+
+        heart.style.left = x + "px";
+        heart.style.top = y + "px";
+        heart.style.setProperty("--x", Math.cos(angle) * distance + "px");
+        heart.style.setProperty("--y", Math.sin(angle) * distance + "px");
+
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 1000);
+    }
+}
+
+/* Floating hearts */
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "💗";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = Math.random() * 3 + 4 + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 7000);
+}
+
+setInterval(createHeart, 450);
+</script>
+
+</body>
+</html>
